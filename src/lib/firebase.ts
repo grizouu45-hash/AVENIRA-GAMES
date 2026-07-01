@@ -3,16 +3,16 @@ import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, g
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, User } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDrfP6WXEZJNbq04dfb_jdZODm9Z1GgoL8",
-  authDomain: "grand-justice-rmvz5.firebaseapp.com",
-  projectId: "grand-justice-rmvz5",
-  storageBucket: "grand-justice-rmvz5.firebasestorage.app",
-  messagingSenderId: "120244208243",
-  appId: "1:120244208243:web:4fbda55e0932d8749fa006"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyB7sENsFn0XiRWnl1ddxwHO09iI1YxDvzM",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "avenira-games.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "avenira-games",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "avenira-games.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "388972625121",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:388972625121:web:8ccb1553df7d75b63d8ba0"
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app, "ai-studio-4b389880-8134-42a8-bec1-c566a05c47a4");
+const db = getFirestore(app);
 const auth = getAuth(app);
 
 export { app, db, auth };
