@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Heart } from "lucide-react";
+import { Heart, DollarSign } from "lucide-react";
 import {
   collection,
   onSnapshot,
@@ -116,7 +116,7 @@ export function StoreFront() {
             ) {
               new Notification("Avenira Games - Yeni Bilgilendirme", {
                 body: game.title,
-                icon: game.imageUrl || "https://i.hizliresim.com/d0z1duo.jpeg",
+                icon: game.imageUrl || "https://i.ibb.co/bMtgKZLk/AVENIRA-GAMES-LOGO.jpg",
               });
             }
           }
@@ -305,7 +305,7 @@ export function StoreFront() {
                   <div className="flex-1 min-w-0">
                     <GameSlider games={featuredGames} />
                   </div>
-                  <div className="w-full xl:w-[320px] 2xl:w-[350px] flex-shrink-0">
+                  <div className="w-full xl:w-[320px] 2xl:w-[350px] flex-shrink-0 flex flex-col gap-4">
                     <ProductSlider products={[
                       {
                         id: "static-1",
@@ -313,13 +313,23 @@ export function StoreFront() {
                         description: "Dream League Soccer'da Bilinmeyen Püf Noktalar & Taktikler",
                         price: "10 TL",
                         badge: "Dijital Ürün",
-                        imageUrl: "https://i.hizliresim.com/lof27z2.png",
+                        imageUrl: "https://i.ibb.co/QvWjtX4g/YARIMVOLE-375e0bbcfceaf9ebffb1e493b728eb7e.png",
                         link: "https://www.shopier.com/YARIMVOLE/48501113",
                         active: true,
                         createdAt: new Date()
                       },
                       ...products
                     ]} />
+                    
+                    <a
+                      href="https://donate.bynogame.com/yarimvolee"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-3 bg-green-600 hover:bg-green-500 text-white text-sm font-semibold rounded-lg transition-all shadow-md shadow-green-500/20 flex items-center justify-center gap-2"
+                    >
+                      <DollarSign className="w-5 h-5" />
+                      BAĞIŞ YAP
+                    </a>
                   </div>
                 </div>
                 <AdSense />
@@ -414,16 +424,16 @@ export function StoreFront() {
                       <div className="bg-white dark:bg-[#1A0B2E] border border-purple-100 dark:border-purple-500/10 rounded-2xl p-6 flex flex-col items-center justify-center w-full sm:w-48 text-center transition-transform hover:-translate-y-1 shadow-sm">
                         <div className="w-24 h-24 rounded-2xl overflow-hidden mb-4 bg-gray-200 dark:bg-gray-800">
                           <img
-                            src="https://yt3.googleusercontent.com/m5NxS2973U4GHvfMST-KPiPRLobMFwQECMKw6cEjRQNGqCRpxSsz9dJbVQ0Hu62pJoAIRsnAmw=s900-c-k-c0x00ffffff-no-rj"
-                            alt="21MUHAMMED09"
+                            src="https://yt3.googleusercontent.com/RQb_v9SFKxOmNR56hLmiGDVRbWJtTINnz4MdgQ4XKsw2FYFhtnP7qMkKIdadj5kyjy7EWdpE4g=s900-c-k-c0x00ffffff-no-rj"
+                            alt="YARIMVOLE"
                             className="w-full h-full object-cover"
                           />
                         </div>
                         <h4 className="font-bold text-gray-900 dark:text-white mb-4 line-clamp-1">
-                          21MUHAMMED09
+                          YARIMVOLE
                         </h4>
                         <a
-                          href="https://www.youtube.com/@21MUHAMMED09"
+                          href="https://www.youtube.com/@yarimvolee"
                           target="_blank"
                           rel="noopener noreferrer"
                           className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full w-full transition-colors text-sm"

@@ -1,6 +1,6 @@
 import { Header } from '../components/Header';
 import { motion } from 'motion/react';
-import { Mail, MapPin, Send } from 'lucide-react';
+import { Mail, MapPin, Send, DollarSign } from 'lucide-react';
 
 export function Contact() {
   return (
@@ -51,6 +51,21 @@ export function Contact() {
                 <a href="https://instagram.com/aveniragames" target="_blank" rel="noopener noreferrer" className="text-purple-600 dark:text-purple-400 hover:underline">@aveniragames</a>
               </div>
             </div>
+          </div>
+
+          <div className="mt-12 p-8 bg-green-50/50 dark:bg-green-900/10 rounded-3xl border border-green-100 dark:border-green-800/30">
+            <p className="text-gray-700 dark:text-gray-300 mb-6 font-medium text-lg">
+              Destekleriniz İçin Çok Teşekkürler
+            </p>
+            <a
+              href="https://donate.bynogame.com/yarimvolee"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-green-600 hover:bg-green-500 text-white text-lg font-bold rounded-2xl transition-all shadow-lg shadow-green-500/20"
+            >
+              <DollarSign className="w-6 h-6" />
+              BAĞIŞ YAP
+            </a>
           </div>
         </motion.div>
       </main>

@@ -59,7 +59,7 @@ export function Header({ onSearch, rightContent }: { onSearch?: (query: string) 
           
           <Link to="/" className="flex items-center gap-2">
             <img 
-              src="https://i.hizliresim.com/d0z1duo.jpeg" 
+              src="https://i.ibb.co/bMtgKZLk/AVENIRA-GAMES-LOGO.jpg" 
               alt="Avenira Games Logo" 
               className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shadow-md border-2 border-purple-200 dark:border-purple-800"
               onError={(e) => {
