@@ -38,6 +38,7 @@ export function StoreFront() {
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
+  const [mobileShowAll, setMobileShowAll] = useState(false);
   const itemsPerPage = 8;
 
   useEffect(() => {
@@ -191,7 +192,7 @@ export function StoreFront() {
     return matchesSearch && matchesCategory;
   });
 
-  const featuredGames = games.slice(0, 5);
+  const featuredGames = games.slice(0, 3);
 
   const handleVote = async (optionIndex: number) => {
     if (!auth.currentUser) {
@@ -275,6 +276,7 @@ export function StoreFront() {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+    setMobileShowAll(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -358,10 +360,23 @@ export function StoreFront() {
               {filteredGames.length > 0 ? (
                 <>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    {paginatedGames.map((game) => (
-                      <GameCard key={game.id} game={game} />
+                    {paginatedGames.map((game, index) => (
+                      <div key={game.id} className={!mobileShowAll && index >= 4 ? "hidden sm:block" : "block"}>
+                        <GameCard game={game} />
+                      </div>
                     ))}
                   </div>
+
+                  {!mobileShowAll && paginatedGames.length > 4 && (
+                    <div className="sm:hidden flex justify-center mb-8">
+                      <button
+                        onClick={() => setMobileShowAll(true)}
+                        className="px-6 py-3 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 font-semibold rounded-xl hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors w-full"
+                      >
+                        Daha Fazla Göster
+                      </button>
+                    </div>
+                  )}
 
                   {totalPages > 1 && (
                     <div className="flex justify-center items-center gap-2 sm:gap-4 mb-12">
