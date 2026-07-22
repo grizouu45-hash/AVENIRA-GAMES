@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://aveniragames.vercel.app/sitemap.xml
