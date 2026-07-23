@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import {
   collection,
   onSnapshot,
@@ -11,10 +11,11 @@ import {
   serverTimestamp,
   Timestamp,
 } from "firebase/firestore";
-import { db, auth } from "../lib/firebase";
+import { db, auth, storage } from "../lib/firebase";
 import { Game, WeeklyQuestion, Giveaway, Product } from "../types";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged, signOut } from "firebase/auth";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import {
   Plus,
   Pencil,
@@ -332,6 +333,96 @@ export function AdminPanel() {
       unsubscribe4();
     };
   }, [user]);
+
+  const quillRef = useRef<ReactQuill>(null);
+  const [isUploadingMedia, setIsUploadingMedia] = useState(false);
+
+  const imageHandler = useCallback(() => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (file) {
+        if (file.size > 5 * 1024 * 1024) {
+          alert("Görsel boyutu çok büyük (Maks 5MB).");
+          return;
+        }
+        setIsUploadingMedia(true);
+        try {
+          const storageRef = ref(storage, `editor_images/${Date.now()}_${file.name}`);
+          const uploadTask = await uploadBytesResumable(storageRef, file);
+          const downloadURL = await getDownloadURL(uploadTask.ref);
+          const quill = quillRef.current?.getEditor();
+          if (quill) {
+            const range = quill.getSelection();
+            const position = range ? range.index : 0;
+            quill.insertEmbed(position, "image", downloadURL);
+          }
+        } catch (error) {
+          console.error("Görsel yüklenemedi:", error);
+          alert("Görsel yüklenirken bir hata oluştu.");
+        } finally {
+          setIsUploadingMedia(false);
+        }
+      }
+    };
+  }, []);
+
+  const videoHandler = useCallback(() => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "video/*");
+    input.click();
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (file) {
+        if (file.size > 50 * 1024 * 1024) {
+          alert("Video boyutu çok büyük (Maks 50MB).");
+          return;
+        }
+        setIsUploadingMedia(true);
+        try {
+          const storageRef = ref(storage, `editor_videos/${Date.now()}_${file.name}`);
+          const uploadTask = await uploadBytesResumable(storageRef, file);
+          const downloadURL = await getDownloadURL(uploadTask.ref);
+          const quill = quillRef.current?.getEditor();
+          if (quill) {
+            const range = quill.getSelection();
+            const position = range ? range.index : 0;
+            quill.insertEmbed(position, "video", downloadURL);
+          }
+        } catch (error) {
+          console.error("Video yüklenemedi:", error);
+          alert("Video yüklenirken bir hata oluştu. Dosya boyutu limitlere takılmış olabilir.");
+        } finally {
+          setIsUploadingMedia(false);
+        }
+      }
+    };
+  }, []);
+
+  const modules = useMemo(
+    () => ({
+      toolbar: {
+        container: [
+          [{ header: [1, 2, 3, false] }],
+          ["bold", "italic", "underline", "strike", "blockquote"],
+          [{ list: "ordered" }, { list: "bullet" }],
+          [{ color: [] }, { background: [] }],
+          [{ align: [] }],
+          ["link", "image", "video"],
+          ["clean"],
+        ],
+        handlers: {
+          image: imageHandler,
+          video: videoHandler,
+        },
+      },
+    }),
+    [imageHandler, videoHandler],
+  );
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -1135,32 +1226,24 @@ export function AdminPanel() {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Detaylı İçerik
                   </label>
-                  <div className="bg-white dark:bg-gray-100 rounded-xl overflow-hidden">
+                  <div className="bg-white dark:bg-gray-100 rounded-xl quill-editor-container mb-4 border border-gray-200">
                     <ReactQuill
+                      ref={quillRef}
                       theme="snow"
                       value={formData.content}
                       onChange={(value) =>
                         setFormData({ ...formData, content: value })
                       }
-                      className="h-64 mb-12 text-gray-900"
-                      modules={{
-                        toolbar: [
-                          [{ header: [1, 2, false] }],
-                          [
-                            "bold",
-                            "italic",
-                            "underline",
-                            "strike",
-                            "blockquote",
-                          ],
-                          [{ list: "ordered" }, { list: "bullet" }],
-                          [{ color: [] }, { background: [] }],
-                          ["link", "image"],
-                          ["clean"],
-                        ],
-                      }}
+                      className="text-gray-900"
+                      modules={modules}
                     />
                   </div>
+                  {isUploadingMedia && (
+                    <div className="text-sm text-purple-600 dark:text-purple-400 mt-2 font-medium flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
+                      Medya yükleniyor, lütfen bekleyin...
+                    </div>
+                  )}
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
