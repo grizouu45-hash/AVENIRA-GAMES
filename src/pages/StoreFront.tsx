@@ -38,7 +38,6 @@ export function StoreFront() {
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
-  const [mobileShowAll, setMobileShowAll] = useState(false);
   const itemsPerPage = 8;
 
   useEffect(() => {
@@ -276,7 +275,6 @@ export function StoreFront() {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    setMobileShowAll(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -360,23 +358,12 @@ export function StoreFront() {
               {filteredGames.length > 0 ? (
                 <>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    {paginatedGames.map((game, index) => (
-                      <div key={game.id} className={!mobileShowAll && index >= 4 ? "hidden sm:block" : "block"}>
+                    {paginatedGames.map((game) => (
+                      <div key={game.id}>
                         <GameCard game={game} />
                       </div>
                     ))}
                   </div>
-
-                  {!mobileShowAll && paginatedGames.length > 4 && (
-                    <div className="sm:hidden flex justify-center mb-8">
-                      <button
-                        onClick={() => setMobileShowAll(true)}
-                        className="px-6 py-3 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 font-semibold rounded-xl hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors w-full"
-                      >
-                        Daha Fazla Göster
-                      </button>
-                    </div>
-                  )}
 
                   {totalPages > 1 && (
                     <div className="flex justify-center items-center gap-2 sm:gap-4 mb-12">
@@ -439,6 +426,28 @@ export function StoreFront() {
                       <div className="bg-white dark:bg-[#1A0B2E] border border-purple-100 dark:border-purple-500/10 rounded-2xl p-6 flex flex-col items-center justify-center w-full sm:w-48 text-center transition-transform hover:-translate-y-1 shadow-sm">
                         <div className="w-24 h-24 rounded-2xl overflow-hidden mb-4 bg-gray-200 dark:bg-gray-800">
                           <img
+                            src="https://yt3.googleusercontent.com/m5NxS2973U4GHvfMST-KPiPRLobMFwQECMKw6cEjRQNGqCRpxSsz9dJbVQ0Hu62pJoAIRsnAmw=s900-c-k-c0x00ffffff-no-rj"
+                            alt="21MUHAMMED09"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <h4 className="font-bold text-gray-900 dark:text-white mb-4 line-clamp-1">
+                          21MUHAMMED09
+                        </h4>
+                        <a
+                          href="https://www.youtube.com/@21MUHAMMED09"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full w-full transition-colors text-sm"
+                        >
+                          Abone Ol
+                        </a>
+                      </div>
+
+                      {/* Kanal 2 */}
+                      <div className="bg-white dark:bg-[#1A0B2E] border border-purple-100 dark:border-purple-500/10 rounded-2xl p-6 flex flex-col items-center justify-center w-full sm:w-48 text-center transition-transform hover:-translate-y-1 shadow-sm">
+                        <div className="w-24 h-24 rounded-2xl overflow-hidden mb-4 bg-gray-200 dark:bg-gray-800">
+                          <img
                             src="https://yt3.googleusercontent.com/RQb_v9SFKxOmNR56hLmiGDVRbWJtTINnz4MdgQ4XKsw2FYFhtnP7qMkKIdadj5kyjy7EWdpE4g=s900-c-k-c0x00ffffff-no-rj"
                             alt="YARIMVOLE"
                             className="w-full h-full object-cover"
@@ -457,7 +466,7 @@ export function StoreFront() {
                         </a>
                       </div>
 
-                      {/* Kanal 2 */}
+                      {/* Kanal 3 */}
                       <div className="bg-white dark:bg-[#1A0B2E] border border-purple-100 dark:border-purple-500/10 rounded-2xl p-6 flex flex-col items-center justify-center w-full sm:w-48 text-center transition-transform hover:-translate-y-1 shadow-sm">
                         <div className="w-24 h-24 rounded-2xl overflow-hidden mb-4 bg-gray-200 dark:bg-gray-800">
                           <img

@@ -200,7 +200,7 @@ export function PostDetails() {
 
             {post.tags && post.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t border-purple-100 dark:border-purple-800/30">
-                {post.tags.map((tag, idx) => (
+                {(Array.isArray(post.tags) ? post.tags : [post.tags]).map((tag, idx) => (
                   <span key={idx} className="bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-300 border border-purple-100 dark:border-purple-800/50 text-xs font-semibold px-2.5 py-1 rounded-md">
                     #{tag}
                   </span>

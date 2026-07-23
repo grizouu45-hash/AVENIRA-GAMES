@@ -36,7 +36,7 @@ export const GameCard: React.FC<{ game: Game }> = ({ game }) => {
           <p className="text-xs text-purple-600/70 dark:text-purple-300/50 mb-2 uppercase tracking-wider">{game.category}</p>
           {game.tags && game.tags.length > 0 && (
             <div className="flex flex-wrap gap-1 mb-3">
-              {game.tags.map((tag, idx) => (
+              {(Array.isArray(game.tags) ? game.tags : [game.tags]).map((tag, idx) => (
                 <span key={idx} className="bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 text-[10px] font-semibold px-2 py-0.5 rounded-md">
                   {tag}
                 </span>

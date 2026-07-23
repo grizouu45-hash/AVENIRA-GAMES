@@ -9,6 +9,7 @@ import {
   addDoc,
   updateDoc,
   serverTimestamp,
+  Timestamp,
 } from "firebase/firestore";
 import { db, auth } from "../lib/firebase";
 import { Game, WeeklyQuestion, Giveaway, Product } from "../types";
@@ -24,6 +25,8 @@ import {
   Image as ImageIcon,
   Gift,
   Users,
+  Download,
+  Loader2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { Header } from "../components/Header";
@@ -88,6 +91,165 @@ export function AdminPanel() {
     category: "",
     tags: "",
   });
+
+  const [isBloggerModalOpen, setIsBloggerModalOpen] = useState(false);
+  const [bloggerPosts, setBloggerPosts] = useState<any[]>([]);
+  const [loadingBlogger, setLoadingBlogger] = useState(false);
+  const [importingPostId, setImportingPostId] = useState<string | null>(null);
+
+  const fetchBloggerPosts = () => {
+    setLoadingBlogger(true);
+    
+    const callbackName = 'bloggerCallback_' + Math.round(100000 * Math.random());
+    
+    (window as any)[callbackName] = (data: any) => {
+      if (data.feed?.entry) {
+        setBloggerPosts(data.feed.entry);
+      }
+      setLoadingBlogger(false);
+      delete (window as any)[callbackName];
+      const scriptEl = document.getElementById(callbackName);
+      if (scriptEl) scriptEl.remove();
+    };
+
+    const script = document.createElement('script');
+    script.id = callbackName;
+    script.src = `https://21muhammed09.blogspot.com/feeds/posts/default?alt=json-in-script&callback=${callbackName}&max-results=50`;
+    script.onerror = () => {
+      console.error("Blogger fetch error");
+      alert("Haberleri çekerken hata oluştu.");
+      setLoadingBlogger(false);
+      delete (window as any)[callbackName];
+      script.remove();
+    };
+    
+    document.body.appendChild(script);
+  };
+
+  const handleOpenBloggerModal = () => {
+    setIsBloggerModalOpen(true);
+    fetchBloggerPosts();
+  };
+
+  const handleImportBloggerPost = async (entry: any) => {
+    const entryId = entry.id.$t;
+    setImportingPostId(entryId);
+    try {
+      let imageUrl = entry.media$thumbnail?.url || "";
+      if (imageUrl) {
+        imageUrl = imageUrl.replace(/\/s72\-c\//, "/s1920/");
+      } else {
+        const match = entry.content?.$t?.match(/<img[^>]+src="([^">]+)"/);
+        if (match) {
+          imageUrl = match[1];
+        }
+      }
+
+      const existing = games.find(g => g.title === entry.title.$t);
+      if (existing) {
+        alert("Bu haber zaten ekli!");
+        setImportingPostId(null);
+        return;
+      }
+
+      const pubDate = new Date(entry.published.$t);
+      const eventDate = pubDate.toISOString().split("T")[0];
+      const eventTime = pubDate.toTimeString().substring(0, 5);
+      
+      const plainTextDesc = entry.content.$t.replace(/<[^>]*>?/gm, '');
+      const description = plainTextDesc.substring(0, 150) + (plainTextDesc.length > 150 ? "..." : "");
+
+      const submitData = {
+        title: entry.title.$t,
+        description: description,
+        content: entry.content.$t,
+        youtubeLink: "",
+        links: [],
+        eventDate: eventDate,
+        eventTime: eventTime,
+        imageUrl: imageUrl,
+        category: "Diğer Oyunlar",
+        tags: ["Blogger"],
+      };
+      
+      const ytMatch = entry.content.$t.match(/youtube\.com\/embed\/([^"?]+)/);
+      if (ytMatch) {
+         submitData.youtubeLink = `https://youtube.com/watch?v=${ytMatch[1]}`;
+      }
+
+      await addDoc(collection(db, "games"), {
+        ...submitData,
+        createdAt: Timestamp.fromDate(pubDate),
+        updatedAt: serverTimestamp(),
+      });
+      
+      alert("Haber başarıyla eklendi!");
+    } catch (error: any) {
+      console.error("Import error", error);
+      alert("Eklenirken hata oluştu.");
+    }
+    setImportingPostId(null);
+  };
+
+  const handleImportAllBloggerPosts = async () => {
+    if (bloggerPosts.length === 0) return;
+
+    setLoadingBlogger(true);
+    let successCount = 0;
+    
+    for (const post of bloggerPosts) {
+      const isAlreadyAdded = games.some(g => g.title === post.title.$t);
+      if (isAlreadyAdded) continue;
+
+      try {
+        let imageUrl = post.media$thumbnail?.url || "";
+        if (imageUrl) {
+          imageUrl = imageUrl.replace(/\/s72\-c\//, "/s1920/");
+        } else {
+          const match = post.content?.$t?.match(/<img[^>]+src="([^">]+)"/);
+          if (match) imageUrl = match[1];
+        }
+
+        const pubDate = new Date(post.published.$t);
+        const eventDate = pubDate.toISOString().split("T")[0];
+        const eventTime = pubDate.toTimeString().substring(0, 5);
+        
+        const plainTextDesc = post.content.$t.replace(/<[^>]*>?/gm, '');
+        const description = plainTextDesc.substring(0, 150) + (plainTextDesc.length > 150 ? "..." : "");
+
+        const submitData = {
+          title: post.title.$t,
+          description: description,
+          content: post.content.$t,
+          youtubeLink: "",
+          links: [],
+          eventDate: eventDate,
+          eventTime: eventTime,
+          imageUrl: imageUrl,
+          category: "Diğer Oyunlar",
+          tags: ["Blogger"],
+        };
+        
+        const ytMatch = post.content.$t.match(/youtube\.com\/embed\/([^"?]+)/);
+        if (ytMatch) {
+           submitData.youtubeLink = `https://youtube.com/watch?v=${ytMatch[1]}`;
+        }
+
+        await addDoc(collection(db, "games"), {
+          ...submitData,
+          createdAt: Timestamp.fromDate(pubDate),
+          updatedAt: serverTimestamp(),
+        });
+        successCount++;
+      } catch (error) {
+        console.error("Error importing post", post.title.$t, error);
+      }
+    }
+    
+    setLoadingBlogger(false);
+    alert(`${successCount} haber başarıyla eklendi!`);
+    setIsBloggerModalOpen(false);
+  };
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
@@ -476,13 +638,22 @@ export function AdminPanel() {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
             Haberleri Yönet
           </h1>
-          <button
-            onClick={openAddModal}
-            className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-xl flex items-center gap-2 text-sm font-medium transition-colors shadow-sm"
-          >
-            <Plus className="w-4 h-4" />
-            Haber Ekle
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleOpenBloggerModal}
+              className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-xl flex items-center gap-2 text-sm font-medium transition-colors shadow-sm"
+            >
+              <Download className="w-4 h-4" />
+              <span className="hidden sm:inline">Blogger'dan Çek</span>
+            </button>
+            <button
+              onClick={openAddModal}
+              className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-xl flex items-center gap-2 text-sm font-medium transition-colors shadow-sm"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">Haber Ekle</span>
+            </button>
+          </div>
         </div>
 
         {loading ? (
@@ -1652,6 +1823,110 @@ export function AdminPanel() {
                     </button>
                   </div>
                 </form>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isBloggerModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-purple-900/20 dark:bg-black/50 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white dark:bg-[#1a0b2e] rounded-2xl shadow-xl w-full max-w-4xl border border-purple-100 dark:border-purple-800/50 overflow-hidden flex flex-col max-h-[90vh]"
+            >
+              <div className="flex items-center justify-between p-4 border-b border-purple-100 dark:border-purple-500/20 bg-purple-50/50 dark:bg-[#2D164B]">
+                <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                  <Download className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                  Blogger'dan İçerik Çek
+                </h3>
+                <div className="flex items-center gap-3">
+                  {!loadingBlogger && bloggerPosts.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={handleImportAllBloggerPosts}
+                      className="px-3 py-1.5 text-xs font-medium text-white bg-orange-600 hover:bg-orange-700 rounded-lg shadow-sm transition-colors flex items-center gap-1.5"
+                    >
+                      <Download className="w-3.5 h-3.5" /> Tümünü Ekle
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setIsBloggerModalOpen(false)}
+                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+              <div className="overflow-y-auto p-6">
+                {loadingBlogger ? (
+                  <div className="flex flex-col items-center justify-center h-64 gap-4">
+                    <Loader2 className="w-8 h-8 text-orange-500 animate-spin" />
+                    <p className="text-gray-500 dark:text-gray-400">Blogger verileri çekiliyor...</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {bloggerPosts.map((post) => {
+                      const entryId = post.id.$t;
+                      const isImporting = importingPostId === entryId;
+                      const isAlreadyAdded = games.some(g => g.title === post.title.$t);
+
+                      let imageUrl = post.media$thumbnail?.url || "";
+                      if (imageUrl) {
+                        imageUrl = imageUrl.replace(/\/s72\-c\//, "/s1920/");
+                      } else {
+                        const match = post.content?.$t?.match(/<img[^>]+src="([^">]+)"/);
+                        if (match) imageUrl = match[1];
+                      }
+
+                      return (
+                        <div key={entryId} className="bg-white dark:bg-purple-900/10 border border-purple-100 dark:border-purple-800/30 rounded-xl overflow-hidden flex flex-col shadow-sm">
+                          {imageUrl ? (
+                            <img src={imageUrl} alt={post.title.$t} className="w-full h-32 object-cover" />
+                          ) : (
+                            <div className="w-full h-32 bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                              <ImageIcon className="w-8 h-8 text-gray-400" />
+                            </div>
+                          )}
+                          <div className="p-4 flex flex-col flex-1">
+                            <h4 className="font-semibold text-gray-900 dark:text-white line-clamp-2 mb-2 text-sm">{post.title.$t}</h4>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">{new Date(post.published.$t).toLocaleDateString("tr-TR")}</p>
+                            <div className="mt-auto">
+                              <button
+                                onClick={() => handleImportBloggerPost(post)}
+                                disabled={isImporting || isAlreadyAdded}
+                                className={`w-full py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2 transition-colors ${
+                                  isAlreadyAdded 
+                                    ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 cursor-not-allowed"
+                                    : "bg-orange-100 text-orange-700 hover:bg-orange-200 dark:bg-orange-900/30 dark:text-orange-400 dark:hover:bg-orange-900/50"
+                                }`}
+                              >
+                                {isImporting ? (
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : isAlreadyAdded ? (
+                                  "Zaten Ekli"
+                                ) : (
+                                  <>
+                                    <Download className="w-4 h-4" /> İçeri Aktar
+                                  </>
+                                )}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    {bloggerPosts.length === 0 && !loadingBlogger && (
+                      <div className="col-span-full py-12 text-center text-gray-500">
+                        Blogger'da içerik bulunamadı veya alınamadı.
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </motion.div>
           </div>

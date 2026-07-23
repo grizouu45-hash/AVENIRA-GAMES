@@ -122,7 +122,7 @@ export function Header({ onSearch, rightContent }: { onSearch?: (query: string) 
             <a href="https://youtube.com/@AVENIRAGAMES" target="_blank" rel="noopener noreferrer" className="p-2 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40 rounded-full transition-colors">
               <Youtube className="w-4 h-4 sm:w-5 sm:h-5" />
             </a>
-            <a href="https://tiktok.com/@fevzicansigva" target="_blank" rel="noopener noreferrer" className="p-2 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40 rounded-full transition-colors">
+            <a href="https://www.tiktok.com/@avenira.games?is_from_webapp=1&sender_device=pc" target="_blank" rel="noopener noreferrer" className="p-2 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40 rounded-full transition-colors">
               <TiktokIcon className="w-4 h-4 sm:w-5 sm:h-5" />
             </a>
           </div>
@@ -227,7 +227,7 @@ export function Header({ onSearch, rightContent }: { onSearch?: (query: string) 
               <a href="https://youtube.com/@AVENIRAGAMES" target="_blank" rel="noopener noreferrer" className="p-2 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40 rounded-full transition-colors">
                 <Youtube className="w-5 h-5" />
               </a>
-              <a href="https://tiktok.com/@fevzicansigva" target="_blank" rel="noopener noreferrer" className="p-2 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40 rounded-full transition-colors">
+              <a href="https://www.tiktok.com/@avenira.games?is_from_webapp=1&sender_device=pc" target="_blank" rel="noopener noreferrer" className="p-2 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40 rounded-full transition-colors">
                 <TiktokIcon className="w-5 h-5" />
               </a>
             </div>
