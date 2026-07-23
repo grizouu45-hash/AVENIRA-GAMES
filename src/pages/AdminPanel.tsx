@@ -15,7 +15,7 @@ import { db, auth, storage } from "../lib/firebase";
 import { Game, WeeklyQuestion, Giveaway, Product } from "../types";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import {
   Plus,
   Pencil,
@@ -337,11 +337,15 @@ export function AdminPanel() {
   const [isUploadingMedia, setIsUploadingMedia] = useState(false);
 
   const imageHandler = useCallback(() => {
+    const quill = quillRef.current?.getEditor();
+    const range = quill?.getSelection();
+    const position = range ? range.index : (quill?.getLength() || 0);
+
     const input = document.createElement("input");
     input.setAttribute("type", "file");
     input.setAttribute("accept", "image/*");
     input.click();
-    input.onchange = async () => {
+    input.onchange = () => {
       const file = input.files?.[0];
       if (file) {
         if (file.size > 5 * 1024 * 1024) {
@@ -349,55 +353,54 @@ export function AdminPanel() {
           return;
         }
         setIsUploadingMedia(true);
-        try {
-          const storageRef = ref(storage, `editor_images/${Date.now()}_${file.name}`);
-          const uploadTask = await uploadBytesResumable(storageRef, file);
-          const downloadURL = await getDownloadURL(uploadTask.ref);
-          const quill = quillRef.current?.getEditor();
-          if (quill) {
-            const range = quill.getSelection();
-            const position = range ? range.index : 0;
-            quill.insertEmbed(position, "image", downloadURL);
-          }
-        } catch (error) {
-          console.error("Görsel yüklenemedi:", error);
-          alert("Görsel yüklenirken bir hata oluştu.");
-        } finally {
-          setIsUploadingMedia(false);
-        }
-      }
-    };
-  }, []);
+        
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement("canvas");
+            let width = img.width;
+            let height = img.height;
 
-  const videoHandler = useCallback(() => {
-    const input = document.createElement("input");
-    input.setAttribute("type", "file");
-    input.setAttribute("accept", "video/*");
-    input.click();
-    input.onchange = async () => {
-      const file = input.files?.[0];
-      if (file) {
-        if (file.size > 50 * 1024 * 1024) {
-          alert("Video boyutu çok büyük (Maks 50MB).");
-          return;
-        }
-        setIsUploadingMedia(true);
-        try {
-          const storageRef = ref(storage, `editor_videos/${Date.now()}_${file.name}`);
-          const uploadTask = await uploadBytesResumable(storageRef, file);
-          const downloadURL = await getDownloadURL(uploadTask.ref);
-          const quill = quillRef.current?.getEditor();
-          if (quill) {
-            const range = quill.getSelection();
-            const position = range ? range.index : 0;
-            quill.insertEmbed(position, "video", downloadURL);
-          }
-        } catch (error) {
-          console.error("Video yüklenemedi:", error);
-          alert("Video yüklenirken bir hata oluştu. Dosya boyutu limitlere takılmış olabilir.");
-        } finally {
+            const MAX_WIDTH = 1000;
+            const MAX_HEIGHT = 1000;
+
+            if (width > height) {
+              if (width > MAX_WIDTH) {
+                height *= MAX_WIDTH / width;
+                width = MAX_WIDTH;
+              }
+            } else {
+              if (height > MAX_HEIGHT) {
+                width *= MAX_HEIGHT / height;
+                height = MAX_HEIGHT;
+              }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            if (ctx) {
+              ctx.drawImage(img, 0, 0, width, height);
+              const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.6);
+              if (quill) {
+                quill.insertEmbed(position, "image", compressedDataUrl);
+                quill.setSelection(position + 1, 0);
+              }
+            }
+            setIsUploadingMedia(false);
+          };
+          img.onerror = () => {
+             alert("Görsel işlenirken hata oluştu.");
+             setIsUploadingMedia(false);
+          };
+          img.src = reader.result as string;
+        };
+        reader.onerror = () => {
+          alert("Dosya okunamadı.");
           setIsUploadingMedia(false);
-        }
+        };
+        reader.readAsDataURL(file);
       }
     };
   }, []);
@@ -416,11 +419,10 @@ export function AdminPanel() {
         ],
         handlers: {
           image: imageHandler,
-          video: videoHandler,
         },
       },
     }),
-    [imageHandler, videoHandler],
+    [imageHandler],
   );
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
