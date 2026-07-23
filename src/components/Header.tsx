@@ -150,7 +150,7 @@ export function Header({ onSearch, rightContent }: { onSearch?: (query: string) 
                       <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{user.email}</p>
                     </div>
                     
-                    {(user.email === 'grizouu45@gmail.com' || user.email === 'sigvafevzican@gmail.com') && (
+                    {(['grizouu45@gmail.com', 'sigvafevzican@gmail.com', 'ytsite2109@gmail.com'].includes(user.email?.toLowerCase() || '')) && (
                       <>
                         <Link 
                           to="/admin" 

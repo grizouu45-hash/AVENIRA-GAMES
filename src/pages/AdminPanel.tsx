@@ -257,8 +257,7 @@ export function AdminPanel() {
       if (
         !currentUser ||
         !currentUser.email ||
-        (currentUser.email.toLowerCase() !== "grizouu45@gmail.com" &&
-          currentUser.email.toLowerCase() !== "sigvafevzican@gmail.com")
+        !['grizouu45@gmail.com', 'sigvafevzican@gmail.com', 'ytsite2109@gmail.com'].includes(currentUser.email.toLowerCase())
       ) {
         navigate("/");
       } else {

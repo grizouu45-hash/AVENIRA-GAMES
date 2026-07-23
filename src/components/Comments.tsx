@@ -46,7 +46,7 @@ export function Comments({ postId }: { postId: string }) {
     if (!user || !newComment.trim()) return;
 
     try {
-      const isAdmin = user.email?.toLowerCase() === 'grizouu45@gmail.com' || user.email?.toLowerCase() === 'sigvafevzican@gmail.com';
+      const isAdmin = ['grizouu45@gmail.com', 'sigvafevzican@gmail.com', 'ytsite2109@gmail.com'].includes(user.email?.toLowerCase() || '');
       const currentUserName = isAdmin ? 'ADMIN' : (user.displayName || user.email?.split('@')[0] || 'Anonim');
       const currentUserPhoto = isAdmin ? 'https://img.magnific.com/premium-vector/technology-concept-vector-illustration-featuring-consulting-design-flat-style-elements_1226483-4088.jpg?semt=ais_hybrid&w=740&q=80' : user.photoURL;
 
@@ -85,7 +85,7 @@ export function Comments({ postId }: { postId: string }) {
     if (!user || !replyText.trim()) return;
 
     try {
-      const isAdmin = user.email?.toLowerCase() === 'grizouu45@gmail.com' || user.email?.toLowerCase() === 'sigvafevzican@gmail.com';
+      const isAdmin = ['grizouu45@gmail.com', 'sigvafevzican@gmail.com', 'ytsite2109@gmail.com'].includes(user.email?.toLowerCase() || '');
       const currentUserName = isAdmin ? 'ADMIN' : (user.displayName || user.email?.split('@')[0] || 'Anonim');
       const currentUserPhoto = isAdmin ? 'https://img.magnific.com/premium-vector/technology-concept-vector-illustration-featuring-consulting-design-flat-style-elements_1226483-4088.jpg?semt=ais_hybrid&w=740&q=80' : user.photoURL;
 
@@ -138,7 +138,7 @@ export function Comments({ postId }: { postId: string }) {
           likes: arrayUnion(user.uid)
         });
         
-        const isAdmin = user.email?.toLowerCase() === 'grizouu45@gmail.com' || user.email?.toLowerCase() === 'sigvafevzican@gmail.com';
+        const isAdmin = ['grizouu45@gmail.com', 'sigvafevzican@gmail.com', 'ytsite2109@gmail.com'].includes(user.email?.toLowerCase() || '');
         const currentUserName = isAdmin ? 'ADMIN' : (user.displayName || user.email?.split('@')[0] || 'Anonim');
         const currentUserPhoto = isAdmin ? 'https://img.magnific.com/premium-vector/technology-concept-vector-illustration-featuring-consulting-design-flat-style-elements_1226483-4088.jpg?semt=ais_hybrid&w=740&q=80' : user.photoURL;
 
@@ -262,7 +262,7 @@ export function Comments({ postId }: { postId: string }) {
                         <Heart className={`w-3 h-3 ${comment.likes?.includes(user.uid) ? 'fill-current' : ''}`} />
                         Beğen {comment.likes?.length ? `(${comment.likes.length})` : ''}
                       </button>
-                      {(comment.userId === user.uid || user.email?.toLowerCase() === 'grizouu45@gmail.com' || user.email?.toLowerCase() === 'sigvafevzican@gmail.com') && (
+                      {(comment.userId === user.uid || ['grizouu45@gmail.com', 'sigvafevzican@gmail.com', 'ytsite2109@gmail.com'].includes(user.email?.toLowerCase() || '')) && (
                         <button
                           onClick={() => handleDelete(comment.id!)}
                           className="text-gray-500 hover:text-red-600 dark:hover:text-red-400 font-medium flex items-center gap-1 ml-auto"
@@ -337,7 +337,7 @@ export function Comments({ postId }: { postId: string }) {
                                   <Heart className={`w-3 h-3 ${reply.likes?.includes(user.uid) ? 'fill-current' : ''}`} />
                                   Beğen {reply.likes?.length ? `(${reply.likes.length})` : ''}
                                 </button>
-                                {(reply.userId === user.uid || user.email?.toLowerCase() === 'grizouu45@gmail.com' || user.email?.toLowerCase() === 'sigvafevzican@gmail.com') && (
+                                {(reply.userId === user.uid || ['grizouu45@gmail.com', 'sigvafevzican@gmail.com', 'ytsite2109@gmail.com'].includes(user.email?.toLowerCase() || '')) && (
                                   <button
                                     onClick={() => handleDelete(reply.id!)}
                                     className="text-gray-500 hover:text-red-600 dark:hover:text-red-400 font-medium flex items-center gap-1 ml-auto"

@@ -12,7 +12,7 @@ export function NotificationsCenter({ user }: { user: User }) {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
-  const isAdmin = user.email ? (user.email.toLowerCase() === 'grizouu45@gmail.com' || user.email.toLowerCase() === 'sigvafevzican@gmail.com') : false;
+  const isAdmin = user.email ? ['grizouu45@gmail.com', 'sigvafevzican@gmail.com', 'ytsite2109@gmail.com'].includes(user.email.toLowerCase()) : false;
 
   useEffect(() => {
     // Listen for both direct user notifications and admin notifications if user is admin

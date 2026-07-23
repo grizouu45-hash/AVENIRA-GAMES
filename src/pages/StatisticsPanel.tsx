@@ -20,7 +20,7 @@ export function StatisticsPanel() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user || (user.email !== 'grizouu45@gmail.com' && user.email !== 'sigvafevzican@gmail.com')) {
+      if (!user || !['grizouu45@gmail.com', 'sigvafevzican@gmail.com', 'ytsite2109@gmail.com'].includes(user.email?.toLowerCase() || '')) {
         navigate('/');
       } else {
         fetchStats();

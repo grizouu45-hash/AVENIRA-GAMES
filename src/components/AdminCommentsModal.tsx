@@ -73,7 +73,7 @@ export function AdminCommentsModal({ isOpen, onClose }: AdminCommentsModalProps)
       const user = auth.currentUser;
       if (!user) throw new Error("Not authenticated");
 
-      const isAdmin = user.email?.toLowerCase() === 'grizouu45@gmail.com' || user.email?.toLowerCase() === 'sigvafevzican@gmail.com';
+      const isAdmin = ['grizouu45@gmail.com', 'sigvafevzican@gmail.com', 'ytsite2109@gmail.com'].includes(user.email?.toLowerCase() || '');
       const currentUserName = isAdmin ? 'ADMIN' : (user.displayName || user.email?.split('@')[0] || 'Admin');
       const currentUserPhoto = isAdmin ? 'https://img.magnific.com/premium-vector/technology-concept-vector-illustration-featuring-consulting-design-flat-style-elements_1226483-4088.jpg?semt=ais_hybrid&w=740&q=80' : user.photoURL;
 
@@ -141,7 +141,7 @@ export function AdminCommentsModal({ isOpen, onClose }: AdminCommentsModalProps)
         });
         setComments(comments.map(c => c.id === comment.id ? { ...c, likes: [...(c.likes || []), user.uid] } : c));
         
-        const isAdmin = user.email?.toLowerCase() === 'grizouu45@gmail.com' || user.email?.toLowerCase() === 'sigvafevzican@gmail.com';
+        const isAdmin = ['grizouu45@gmail.com', 'sigvafevzican@gmail.com', 'ytsite2109@gmail.com'].includes(user.email?.toLowerCase() || '');
         const currentUserName = isAdmin ? 'ADMIN' : (user.displayName || user.email?.split('@')[0] || 'Admin');
         const currentUserPhoto = isAdmin ? 'https://img.magnific.com/premium-vector/technology-concept-vector-illustration-featuring-consulting-design-flat-style-elements_1226483-4088.jpg?semt=ais_hybrid&w=740&q=80' : user.photoURL;
 
